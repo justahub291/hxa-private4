@@ -245,6 +245,11 @@ createButton("🟢 Kurd Hub", function()
     notify("Kurd Hub","Loaded ✔")
 end)
 
+createButton("☀️ Sun Hub", function()
+    loadstring(game:HttpGet("https://api.luarmor.net/files/v4/loaders/623c61e59524bc04f458c6f6dd2c3f8b.lua",true))()
+    notify("Sun Hub","Loaded ✔")
+end)
+
 createButton("🔒 Auto Block After Steal", function()
     loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/e51d9174e080752c62ce754bb72ad183.lua",true))()
     notify("Auto Block","Loaded ✔")
@@ -263,6 +268,11 @@ end)
 createButton("🔓 Allow / Disallow", function()
     loadstring(game:HttpGet("https://pastefy.app/wcNjuW3Z/raw",true))()
     notify("Allow / Disallow","Loaded ✔")
+end)
+
+createButton("❌ Close", function()
+    main.Visible = false
+    reopenBtn.Visible = true
 end)
 
 -- ======================
@@ -285,14 +295,6 @@ Instance.new("UICorner", reopenBtn).CornerRadius = UDim.new(1,0)
 reopenBtn.MouseButton1Click:Connect(function()
     main.Visible = true
     reopenBtn.Visible = false
-end)
-
--- ======================
--- ❌ CLOSE
--- ======================
-createButton("❌ Close", function()
-    main.Visible = false
-    reopenBtn.Visible = true
 end)
 
 -- ======================
