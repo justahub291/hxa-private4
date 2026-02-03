@@ -202,6 +202,3 @@ createButton("❌ Close", function()
 	main.Visible = false
 	reopenBtn.Visible = true
 end)
-
-
-
