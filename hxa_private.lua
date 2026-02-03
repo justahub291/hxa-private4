@@ -14,7 +14,7 @@ local OWNER_ID = 10440238844
 local Whitelist = {
 	[OWNER_ID] = true,
 	[8761695710] = true,
-	[9907212367] = true, -- ✅ whitelist
+	[9907212367] = true,
 }
 
 if not Whitelist[player.UserId] then
@@ -38,42 +38,42 @@ gui.Parent = player:WaitForChild("PlayerGui")
 
 --// ===================== VERSION CHOOSER =====================
 local chooser = Instance.new("Frame", gui)
-chooser.Size = UDim2.new(0,300,0,180)
-chooser.Position = UDim2.new(0.5,-150,0.5,-90)
+chooser.Size = UDim2.new(0,260,0,160)
+chooser.Position = UDim2.new(0.5,-130,0.5,-80)
 chooser.BackgroundColor3 = Color3.fromRGB(20,15,40)
 chooser.BorderSizePixel = 0
 Instance.new("UICorner", chooser).CornerRadius = UDim.new(0,20)
 
-local chooseTitle = Instance.new("TextLabel", chooser)
-chooseTitle.Size = UDim2.new(1,0,0,50)
-chooseTitle.BackgroundTransparency = 1
-chooseTitle.Text = "Choisir la version"
-chooseTitle.Font = Enum.Font.GothamBlack
-chooseTitle.TextSize = 22
-chooseTitle.TextColor3 = Color3.fromRGB(220,200,255)
+local titleC = Instance.new("TextLabel", chooser)
+titleC.Size = UDim2.new(1,0,0,45)
+titleC.BackgroundTransparency = 1
+titleC.Text = "Choisir la version"
+titleC.Font = Enum.Font.GothamBlack
+titleC.TextSize = 20
+titleC.TextColor3 = Color3.fromRGB(220,200,255)
 
 local isMobile = false
 
-local function choiceButton(txt, y, cb)
+local function choice(txt, y, cb)
 	local b = Instance.new("TextButton", chooser)
-	b.Size = UDim2.new(0.8,0,0,45)
-	b.Position = UDim2.new(0.1,0,y,0)
+	b.Size = UDim2.new(0.85,0,0,38)
+	b.Position = UDim2.new(0.075,0,y,0)
 	b.Text = txt
 	b.Font = Enum.Font.GothamBold
-	b.TextSize = 16
+	b.TextSize = 14
 	b.TextColor3 = Color3.new(1,1,1)
 	b.BackgroundColor3 = Color3.fromRGB(90,55,170)
 	b.BorderSizePixel = 0
-	Instance.new("UICorner", b).CornerRadius = UDim.new(0,18)
+	Instance.new("UICorner", b).CornerRadius = UDim.new(0,16)
 	b.MouseButton1Click:Connect(cb)
 end
 
-choiceButton("🖥️ Version PC", 0.35, function()
+choice("🖥️ Version PC", 0.38, function()
 	isMobile = false
 	chooser:Destroy()
 end)
 
-choiceButton("📱 Version Mobile", 0.65, function()
+choice("📱 Version Mobile", 0.65, function()
 	isMobile = true
 	chooser:Destroy()
 end)
@@ -81,7 +81,7 @@ end)
 repeat task.wait() until chooser.Parent == nil
 
 --// ===================== MAIN FRAME =====================
-local mainSize = isMobile and UDim2.new(0,320,0,340) or UDim2.new(0,420,0,400)
+local mainSize = isMobile and UDim2.new(0,260,0,280) or UDim2.new(0,420,0,400)
 
 local main = Instance.new("Frame", gui)
 main.Size = mainSize
@@ -90,44 +90,43 @@ main.BackgroundColor3 = Color3.fromRGB(14,10,30)
 main.BorderSizePixel = 0
 main.Active = true
 main.Draggable = true
-Instance.new("UICorner", main).CornerRadius = UDim.new(0,30)
+Instance.new("UICorner", main).CornerRadius = UDim.new(0,26)
 
--- animation
 main.Size = UDim2.new(0,0,0,0)
-TweenService:Create(main, TweenInfo.new(0.5, Enum.EasingStyle.Back), {Size = mainSize}):Play()
+TweenService:Create(main, TweenInfo.new(0.45, Enum.EasingStyle.Back), {Size = mainSize}):Play()
 
 --// ===================== TITLE =====================
 local title = Instance.new("TextLabel", main)
-title.Size = UDim2.new(1,0,0,50)
+title.Size = UDim2.new(1,0,0,42)
 title.BackgroundTransparency = 1
 title.Text = "HXA PRIVATE"
 title.Font = Enum.Font.GothamBlack
-title.TextSize = isMobile and 22 or 28
+title.TextSize = isMobile and 18 or 28
 title.TextColor3 = Color3.fromRGB(215,195,255)
 
 --// ===================== SCROLL =====================
 local scroll = Instance.new("ScrollingFrame", main)
-scroll.Size = UDim2.new(1,-20,1,-70)
-scroll.Position = UDim2.new(0,10,0,60)
+scroll.Size = UDim2.new(1,-16,1,-58)
+scroll.Position = UDim2.new(0,8,0,50)
 scroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
-scroll.ScrollBarThickness = 6
+scroll.ScrollBarThickness = 4
 scroll.BackgroundTransparency = 1
 
 local layout = Instance.new("UIListLayout", scroll)
-layout.Padding = UDim.new(0,10)
+layout.Padding = isMobile and UDim.new(0,6) or UDim.new(0,10)
 layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
 --// ===================== BUTTON CREATOR =====================
 local function createButton(text, callback)
 	local b = Instance.new("TextButton", scroll)
-	b.Size = UDim2.new(0.9,0,0,45)
+	b.Size = isMobile and UDim2.new(0.96,0,0,34) or UDim2.new(0.9,0,0,45)
 	b.Text = text
 	b.Font = Enum.Font.GothamBold
-	b.TextSize = 15
+	b.TextSize = isMobile and 13 or 15
 	b.TextColor3 = Color3.new(1,1,1)
 	b.BackgroundColor3 = Color3.fromRGB(85,45,170)
 	b.BorderSizePixel = 0
-	Instance.new("UICorner", b).CornerRadius = UDim.new(0,22)
+	Instance.new("UICorner", b).CornerRadius = UDim.new(0,20)
 	b.MouseButton1Click:Connect(callback)
 end
 
@@ -181,11 +180,11 @@ end
 
 --// ===================== REOPEN BUTTON =====================
 local reopenBtn = Instance.new("TextButton", gui)
-reopenBtn.Size = UDim2.new(0,60,0,60)
-reopenBtn.Position = UDim2.new(1,-80,0,20)
+reopenBtn.Size = UDim2.new(0,56,0,56)
+reopenBtn.Position = UDim2.new(1,-70,0,20)
 reopenBtn.Text = "HXA"
 reopenBtn.Font = Enum.Font.GothamBlack
-reopenBtn.TextSize = 18
+reopenBtn.TextSize = 16
 reopenBtn.TextColor3 = Color3.fromRGB(230,200,255)
 reopenBtn.BackgroundColor3 = Color3.fromRGB(90,55,170)
 reopenBtn.BorderSizePixel = 0
@@ -203,3 +202,4 @@ createButton("❌ Close", function()
 	main.Visible = false
 	reopenBtn.Visible = true
 end)
+
