@@ -81,11 +81,9 @@ repeat task.wait() until not chooser.Parent
 local main = Instance.new("Frame", gui)
 
 if isMobile then
-	-- 📱 EXACT FORM LIKE IMAGE
 	main.Size = UDim2.fromScale(0.36,0.72)
 	main.Position = UDim2.fromScale(0.32,0.14)
 else
-	-- 🖥️ PC
 	main.Size = UDim2.new(0,420,0,400)
 	main.Position = UDim2.new(0.5,-210,0.5,-200)
 end
@@ -96,7 +94,7 @@ main.Active = true
 main.Draggable = not isMobile
 Instance.new("UICorner", main).CornerRadius = UDim.new(0,32)
 
--- open anim
+-- open animation
 local endSize = main.Size
 main.Size = UDim2.new(0,0,0,0)
 TweenService:Create(main,TweenInfo.new(0.45,Enum.EasingStyle.Back),{
@@ -124,7 +122,7 @@ local layout = Instance.new("UIListLayout", scroll)
 layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 layout.Padding = UDim.new(0,8)
 
---// ===================== BUTTON CREATOR (PILL) =====================
+--// ===================== BUTTON CREATOR =====================
 local function createButton(text, callback)
 	local b = Instance.new("TextButton", scroll)
 	b.Size = UDim2.new(0.94,0,0,34)
@@ -139,44 +137,58 @@ local function createButton(text, callback)
 end
 
 --// ===================== HUB BUTTONS =====================
-createButton("🚀 TP BLOCK",function()
+createButton("🚀 TP BLOCK", function()
 	safeLoad("tpblock","https://raw.githubusercontent.com/rookieiscute/rookiescripts/refs/heads/main/RookieTp")
 end)
 
-createButton("🌶️ Chilli",function()
+createButton("🌶️ Chilli", function()
 	safeLoad("chilli","https://raw.githubusercontent.com/tienkhanh1/spicy/main/Chilli.lua")
 end)
 
-createButton("🌀 Nameless",function()
+createButton("🌀 Nameless", function()
 	safeLoad("nameless","https://raw.githubusercontent.com/ily123950/Vulkan/refs/heads/main/Tr")
 end)
 
-createButton("✨ Illusion",function()
+createButton("✨ Illusion", function()
 	safeLoad("illusion","https://raw.githubusercontent.com/fdellacortw-svg/Website/refs/heads/main/config1")
 end)
 
-createButton("🧿 Miranda",function()
+createButton("🧿 Miranda", function()
 	safeLoad("miranda","https://pastefy.app/JJVhs3rK/raw")
 end)
 
-createButton("🟢 Kurd",function()
+createButton("🟢 Kurd", function()
 	safeLoad("kurd","https://raw.githubusercontent.com/Ninja10908/S4/refs/heads/main/Kurdhub")
 end)
 
-createButton("🔒 Auto Block",function()
+createButton("🔒 Auto Block", function()
 	safeLoad("autoblock","https://api.luarmor.net/files/v3/loaders/e51d9174e080752c62ce754bb72ad183.lua")
 end)
 
-createButton("🤪 Silly Booster",function()
+createButton("🤪 Silly Booster", function()
 	safeLoad("silly","https://pastebin.com/raw/GEnDVifW")
 end)
 
-createButton("⚡ AP Spammer",function()
+createButton("⚡ AP Spammer", function()
 	safeLoad("ap","https://api.luarmor.net/files/v3/loaders/ede7ef9c404dba463a6103aeb3cc321a.lua")
 end)
 
-createButton("☀️ Sun Hub",function()
+createButton("☀️ Sun Hub", function()
 	safeLoad("sun","https://api.luarmor.net/files/v4/loaders/623c61e59524bc04f458c6f6dd2c3f8b.lua")
+end)
+
+createButton("🟣 Semi Instant Steal", function()
+	safeLoad(
+		"semiinstasteal",
+		"https://raw.githubusercontent.com/Solaratfr/SemiInstaSteal/refs/heads/main/Artfull"
+	)
+end)
+
+createButton("🔀 DESYNC", function()
+	safeLoad(
+		"desync",
+		"https://gist.githubusercontent.com/corruptedhub901/d9198a32ccb024d3a709fc79181d45af/raw/e07bf6acc7f5e411e98f40f49c947bc5aaea9dbb/CorruptedDesync"
+	)
 end)
 
 --// ===================== CLOSE + REOPEN =====================
@@ -197,12 +209,12 @@ reopen.MouseButton1Click:Connect(function()
 	reopen.Visible = false
 end)
 
-createButton("❌ Close",function()
+createButton("❌ Close", function()
 	main.Visible = false
 	reopen.Visible = true
 end)
 
--- ALT toggle PC
+-- PC keybind
 UIS.InputBegan:Connect(function(i,gp)
 	if gp or isMobile then return end
 	if i.KeyCode == Enum.KeyCode.LeftAlt then
@@ -210,4 +222,3 @@ UIS.InputBegan:Connect(function(i,gp)
 		reopen.Visible = not main.Visible
 	end
 end)
-
