@@ -1,253 +1,225 @@
---// HXA PRIVATE HUB - FULL ALL-IN-ONE (NO WHITELIST)
+--// ===================== HXA PRIVATE HUB - FINAL =====================
+if getgenv().HXA_LOADED then return end
+getgenv().HXA_LOADED = true
 
-local player = game.Players.LocalPlayer
+--// ===================== SERVICES =====================
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
 local UIS = game:GetService("UserInputService")
-local RunService = game:GetService("RunService")
+local player = Players.LocalPlayer
 
-local tpExecuted = false
-local hubVisible = true
+--// ===================== WHITELIST =====================
+local OWNER_ID = 10440238844
+local Whitelist = {
+	[OWNER_ID] = true,
+	[8761695710] = true,
+	[9907212367] = true,
+}
 
--- ======================
--- GUI
--- ======================
-local gui = Instance.new("ScreenGui")
+if not Whitelist[player.UserId] then
+	player:Kick("❌ Accès refusé")
+	return
+end
+
+--// ===================== SAFE LOAD =====================
+getgenv().HXA_BLACKLIST = getgenv().HXA_BLACKLIST or {}
+local function safeLoad(id, url)
+	if getgenv().HXA_BLACKLIST[id] then return end
+	getgenv().HXA_BLACKLIST[id] = true
+	loadstring(game:HttpGet(url, true))()
+end
+
+--// ===================== GUI ROOT =====================
+local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
 gui.Name = "HXAPRIVATE"
 gui.ResetOnSpawn = false
-gui.Parent = player:WaitForChild("PlayerGui")
 
--- ======================
--- 🌠 STARS BACKGROUND
--- ======================
-local starsFolder = Instance.new("Folder", gui)
-local stars = {}
+--// ===================== VERSION CHOOSER =====================
+local chooser = Instance.new("Frame", gui)
+chooser.Size = UDim2.fromScale(0.45,0.32)
+chooser.Position = UDim2.fromScale(0.275,0.34)
+chooser.BackgroundColor3 = Color3.fromRGB(18,14,35)
+chooser.BorderSizePixel = 0
+Instance.new("UICorner", chooser).CornerRadius = UDim.new(0,22)
 
-for i = 1,140 do
-    local star = Instance.new("Frame")
-    local size = math.random(1,2)
-    star.Size = UDim2.new(0,size,0,size)
-    star.Position = UDim2.new(math.random(),0,math.random(),0)
-    star.BackgroundColor3 = Color3.fromRGB(230,230,255)
-    star.BackgroundTransparency = math.random(3,6)/10
-    star.BorderSizePixel = 0
-    star.Parent = starsFolder
-    stars[star] = math.random(6,20)/1000
+local ct = Instance.new("TextLabel", chooser)
+ct.Size = UDim2.new(1,0,0.3,0)
+ct.BackgroundTransparency = 1
+ct.Text = "Choisir version"
+ct.Font = Enum.Font.GothamBlack
+ct.TextScaled = true
+ct.TextColor3 = Color3.fromRGB(220,200,255)
+
+local isMobile = false
+local function choice(txt,y,cb)
+	local b = Instance.new("TextButton", chooser)
+	b.Size = UDim2.new(0.85,0,0.28,0)
+	b.Position = UDim2.new(0.075,0,y,0)
+	b.Text = txt
+	b.Font = Enum.Font.GothamBold
+	b.TextScaled = true
+	b.TextColor3 = Color3.new(1,1,1)
+	b.BackgroundColor3 = Color3.fromRGB(90,55,170)
+	b.BorderSizePixel = 0
+	Instance.new("UICorner", b).CornerRadius = UDim.new(0,16)
+	b.MouseButton1Click:Connect(cb)
 end
 
-RunService.RenderStepped:Connect(function()
-    for star,speed in pairs(stars) do
-        local y = star.Position.Y.Scale + speed
-        if y > 1.05 then
-            star.Position = UDim2.new(math.random(),0,-0.05,0)
-        else
-            star.Position = UDim2.new(star.Position.X.Scale,0,y,0)
-        end
-    end
+choice("🖥️ PC",0.38,function()
+	isMobile = false
+	chooser:Destroy()
 end)
 
--- ======================
--- 🔔 NOTIFICATION
--- ======================
-local function notify(title,text)
-    local f = Instance.new("Frame",gui)
-    f.Size = UDim2.new(0,260,0,70)
-    f.Position = UDim2.new(1,-280,1,100)
-    f.AnchorPoint = Vector2.new(0,1)
-    f.BackgroundColor3 = Color3.fromRGB(30,20,60)
-    f.BorderSizePixel = 0
-    Instance.new("UICorner",f).CornerRadius = UDim.new(0,18)
+choice("📱 Mobile",0.68,function()
+	isMobile = true
+	chooser:Destroy()
+end)
 
-    local t = Instance.new("TextLabel",f)
-    t.Size = UDim2.new(1,-20,0,30)
-    t.Position = UDim2.new(0,10,0,5)
-    t.BackgroundTransparency = 1
-    t.Text = title
-    t.Font = Enum.Font.GothamBold
-    t.TextSize = 16
-    t.TextColor3 = Color3.fromRGB(220,200,255)
-    t.TextXAlignment = Enum.TextXAlignment.Left
+repeat task.wait() until not chooser.Parent
 
-    local d = Instance.new("TextLabel",f)
-    d.Size = UDim2.new(1,-20,0,25)
-    d.Position = UDim2.new(0,10,0,35)
-    d.BackgroundTransparency = 1
-    d.Text = text
-    d.Font = Enum.Font.Gotham
-    d.TextSize = 14
-    d.TextColor3 = Color3.fromRGB(200,200,220)
-    d.TextXAlignment = Enum.TextXAlignment.Left
+--// ===================== MAIN HUB =====================
+local main = Instance.new("Frame", gui)
 
-    f:TweenPosition(UDim2.new(1,-280,1,-20),Enum.EasingDirection.Out,Enum.EasingStyle.Quart,0.4,true)
-    task.delay(3,function()
-        f:TweenPosition(UDim2.new(1,-280,1,100),Enum.EasingDirection.In,Enum.EasingStyle.Quart,0.4,true)
-        task.delay(0.5,function() f:Destroy() end)
-    end)
+if isMobile then
+	main.Size = UDim2.fromScale(0.36,0.72)
+	main.Position = UDim2.fromScale(0.32,0.14)
+else
+	main.Size = UDim2.new(0,420,0,400)
+	main.Position = UDim2.new(0.5,-210,0.5,-200)
 end
 
--- ======================
--- 🌌 MAIN
--- ======================
-local main = Instance.new("Frame",gui)
-main.Size = UDim2.new(0,420,0,400)
-main.Position = UDim2.new(0.5,-210,0.5,-200)
-main.BackgroundColor3 = Color3.fromRGB(14,10,30)
+main.BackgroundColor3 = Color3.fromRGB(18,14,35)
 main.BorderSizePixel = 0
-Instance.new("UICorner",main).CornerRadius = UDim.new(0,30)
+main.Active = true
+main.Draggable = not isMobile
+Instance.new("UICorner", main).CornerRadius = UDim.new(0,32)
 
--- ======================
--- TOP BAR DRAG
--- ======================
-local top = Instance.new("Frame",main)
-top.Size = UDim2.new(1,0,0,60)
-top.BackgroundTransparency = 1
-top.Active = true
+-- open animation
+local endSize = main.Size
+main.Size = UDim2.new(0,0,0,0)
+TweenService:Create(main,TweenInfo.new(0.45,Enum.EasingStyle.Back),{
+	Size = endSize
+}):Play()
 
-local title = Instance.new("TextLabel",top)
-title.Size = UDim2.new(1,0,1,0)
+--// ===================== TITLE =====================
+local title = Instance.new("TextLabel", main)
+title.Size = UDim2.new(1,0,0,42)
 title.BackgroundTransparency = 1
-title.Text = "HXA PRIVATE"
+title.Text = "HXA"
 title.Font = Enum.Font.GothamBlack
-title.TextSize = 30
-title.TextColor3 = Color3.fromRGB(215,195,255)
+title.TextSize = 22
+title.TextColor3 = Color3.fromRGB(220,200,255)
 
-local drag,ds,sp
-top.InputBegan:Connect(function(i)
-    if i.UserInputType == Enum.UserInputType.MouseButton1 then
-        drag=true ds=i.Position sp=main.Position
-    end
-end)
-top.InputEnded:Connect(function(i) if i.UserInputType==Enum.UserInputType.MouseButton1 then drag=false end end)
-UIS.InputChanged:Connect(function(i)
-    if drag and i.UserInputType==Enum.UserInputType.MouseMovement then
-        local d=i.Position-ds
-        main.Position=UDim2.new(sp.X.Scale,sp.X.Offset+d.X,sp.Y.Scale,sp.Y.Offset+d.Y)
-    end
-end)
+--// ===================== SCROLL =====================
+local scroll = Instance.new("ScrollingFrame", main)
+scroll.Size = UDim2.new(1,-12,1,-60)
+scroll.Position = UDim2.new(0,6,0,50)
+scroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+scroll.ScrollBarThickness = 2
+scroll.BackgroundTransparency = 1
 
--- ======================
--- SEARCH BAR
--- ======================
-local search = Instance.new("TextBox",main)
-search.Size = UDim2.new(1,-40,0,36)
-search.Position = UDim2.new(0,20,0,70)
-search.PlaceholderText="Search..."
-search.ClearTextOnFocus=false
-search.Font=Enum.Font.Gotham
-search.TextSize=14
-search.TextColor3=Color3.new(1,1,1)
-search.BackgroundColor3=Color3.fromRGB(25,18,50)
-search.BorderSizePixel=0
-Instance.new("UICorner",search).CornerRadius=UDim.new(0,14)
+local layout = Instance.new("UIListLayout", scroll)
+layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+layout.Padding = UDim.new(0,8)
 
--- ======================
--- SCROLL
--- ======================
-local scroll = Instance.new("ScrollingFrame",main)
-scroll.Size=UDim2.new(1,-20,1,-140)
-scroll.Position=UDim2.new(0,10,0,115)
-scroll.AutomaticCanvasSize=Enum.AutomaticSize.Y
-scroll.ScrollBarThickness=6
-scroll.BackgroundTransparency=1
-
-local layout=Instance.new("UIListLayout",scroll)
-layout.Padding=UDim.new(0,12)
-layout.HorizontalAlignment=Enum.HorizontalAlignment.Center
-
-local function btn(txt,cb)
-    local b=Instance.new("TextButton",scroll)
-    b.Size=UDim2.new(0.9,0,0,48)
-    b.Text=txt
-    b.Font=Enum.Font.GothamBold
-    b.TextSize=16
-    b.TextColor3=Color3.new(1,1,1)
-    b.BackgroundColor3=Color3.fromRGB(85,45,170)
-    b.BorderSizePixel=0
-    Instance.new("UICorner",b).CornerRadius=UDim.new(0,24)
-    b.MouseButton1Click:Connect(cb)
+--// ===================== BUTTON CREATOR =====================
+local function createButton(text, callback)
+	local b = Instance.new("TextButton", scroll)
+	b.Size = UDim2.new(0.94,0,0,34)
+	b.Text = text
+	b.Font = Enum.Font.GothamBold
+	b.TextSize = 14
+	b.TextColor3 = Color3.new(1,1,1)
+	b.BackgroundColor3 = Color3.fromRGB(95,60,180)
+	b.BorderSizePixel = 0
+	Instance.new("UICorner", b).CornerRadius = UDim.new(1,0)
+	b.MouseButton1Click:Connect(callback)
 end
 
-search:GetPropertyChangedSignal("Text"):Connect(function()
-    local q=string.lower(search.Text)
-    for _,c in ipairs(scroll:GetChildren()) do
-        if c:IsA("TextButton") then
-            c.Visible=q=="" or string.find(string.lower(c.Text),q)
-        end
-    end
+--// ===================== HUB BUTTONS =====================
+createButton("🚀 TP BLOCK", function()
+	safeLoad("tpblock","https://raw.githubusercontent.com/rookieiscute/rookiescripts/refs/heads/main/RookieTp")
 end)
 
--- ======================
--- BUTTONS (NO WHITELIST)
--- ======================
-btn("🚀 TP BLOCK",function()
-    if tpExecuted then return end
-    tpExecuted=true
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/rookieiscute/rookiescripts/refs/heads/main/RookieTp"))()
-    notify("TP Block","Loaded ✔")
+createButton("🌶️ Chilli", function()
+	safeLoad("chilli","https://raw.githubusercontent.com/tienkhanh1/spicy/main/Chilli.lua")
 end)
 
-btn("🌶️ Chilli Hub",function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/tienkhanh1/spicy/main/Chilli.lua"))()
-    notify("Chilli Hub","Loaded ✔")
+createButton("🌀 Nameless", function()
+	safeLoad("nameless","https://raw.githubusercontent.com/ily123950/Vulkan/refs/heads/main/Tr")
 end)
 
-btn("🌀 Nameless Hub",function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/ily123950/Vulkan/refs/heads/main/Tr"))()
-    notify("Nameless Hub","Loaded ✔")
+createButton("✨ Illusion", function()
+	safeLoad("illusion","https://raw.githubusercontent.com/fdellacortw-svg/Website/refs/heads/main/config1")
 end)
 
-btn("✨ Illusion Hub",function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/fdellacortw-svg/Website/refs/heads/main/config1"))()
-    notify("Illusion Hub","Loaded ✔")
+createButton("🧿 Miranda", function()
+	safeLoad("miranda","https://pastefy.app/JJVhs3rK/raw")
 end)
 
-btn("🧿 Miranda Hub",function()
-    loadstring(game:HttpGet("https://pastefy.app/JJVhs3rK/raw"))()
-    notify("Miranda Hub","Loaded ✔")
+createButton("🟢 Kurd", function()
+	safeLoad("kurd","https://raw.githubusercontent.com/Ninja10908/S4/refs/heads/main/Kurdhub")
 end)
 
-btn("🟢 Kurd Hub",function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/Ninja10908/S4/refs/heads/main/Kurdhub"))()
-    notify("Kurd Hub","Loaded ✔")
+createButton("🔒 Auto Block", function()
+	safeLoad("autoblock","https://api.luarmor.net/files/v3/loaders/e51d9174e080752c62ce754bb72ad183.lua")
 end)
 
-btn("☀️ Sun Hub",function()
-    loadstring(game:HttpGet("https://api.luarmor.net/files/v4/loaders/623c61e59524bc04f458c6f6dd2c3f8b.lua"))()
-    notify("Sun Hub","Loaded ✔")
+createButton("🤪 Silly Booster", function()
+	safeLoad("silly","https://pastebin.com/raw/GEnDVifW")
 end)
 
-btn("❌ Close",function()
-    main.Visible=false
-    reopen.Visible=true
+createButton("⚡ AP Spammer", function()
+	safeLoad("ap","https://api.luarmor.net/files/v3/loaders/ede7ef9c404dba463a6103aeb3cc321a.lua")
 end)
 
--- ======================
--- FLOAT BUTTON
--- ======================
-reopen=Instance.new("TextButton",gui)
-reopen.Size=UDim2.new(0,60,0,60)
-reopen.Position=UDim2.new(1,-80,0,20)
-reopen.Text="HXA"
-reopen.Font=Enum.Font.GothamBlack
-reopen.TextSize=18
-reopen.TextColor3=Color3.fromRGB(230,200,255)
-reopen.BackgroundColor3=Color3.fromRGB(90,55,170)
-reopen.BorderSizePixel=0
-reopen.Visible=false
-reopen.Draggable=true
-Instance.new("UICorner",reopen).CornerRadius=UDim.new(1,0)
+createButton("☀️ Sun Hub", function()
+	safeLoad("sun","https://api.luarmor.net/files/v4/loaders/623c61e59524bc04f458c6f6dd2c3f8b.lua")
+end)
+
+createButton("🟣 Semi Instant Steal", function()
+	safeLoad(
+		"semiinstasteal",
+		"https://raw.githubusercontent.com/Solaratfr/SemiInstaSteal/refs/heads/main/Artfull"
+	)
+end)
+
+createButton("🔀 DESYNC", function()
+	safeLoad(
+		"desync",
+		"https://gist.githubusercontent.com/corruptedhub901/d9198a32ccb024d3a709fc79181d45af/raw/e07bf6acc7f5e411e98f40f49c947bc5aaea9dbb/CorruptedDesync"
+	)
+end)
+
+--// ===================== CLOSE + REOPEN =====================
+local reopen = Instance.new("TextButton", gui)
+reopen.Size = UDim2.fromScale(0.14,0.08)
+reopen.Position = UDim2.fromScale(0.82,0.03)
+reopen.Text = "HXA"
+reopen.Font = Enum.Font.GothamBlack
+reopen.TextScaled = true
+reopen.TextColor3 = Color3.fromRGB(230,200,255)
+reopen.BackgroundColor3 = Color3.fromRGB(95,60,180)
+reopen.BorderSizePixel = 0
+reopen.Visible = false
+Instance.new("UICorner", reopen).CornerRadius = UDim.new(1,0)
 
 reopen.MouseButton1Click:Connect(function()
-    main.Visible=true
-    reopen.Visible=false
+	main.Visible = true
+	reopen.Visible = false
 end)
 
+createButton("❌ Close", function()
+	main.Visible = false
+	reopen.Visible = true
+end)
+
+-- PC keybind
 UIS.InputBegan:Connect(function(i,gp)
-    if gp then return end
-    if i.KeyCode==Enum.KeyCode.LeftAlt or i.KeyCode==Enum.KeyCode.RightAlt then
-        hubVisible=not hubVisible
-        main.Visible=hubVisible
-        reopen.Visible=not hubVisible
-    end
+	if gp or isMobile then return end
+	if i.KeyCode == Enum.KeyCode.LeftAlt then
+		main.Visible = not main.Visible
+		reopen.Visible = not main.Visible
+	end
 end)
 
-main.Size=UDim2.new(0,0,0,0)
-main:TweenSize(UDim2.new(0,420,0,400),Enum.EasingDirection.Out,Enum.EasingStyle.Back,0.6,true)
