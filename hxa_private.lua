@@ -1,4 +1,4 @@
---// ===================== HXA HUB - FINAL =====================
+--// ===================== HXA HUB - FINAL AUTOLOAD FIX =====================
 getgenv().HXA_AUTOLOAD = getgenv().HXA_AUTOLOAD or {}
 
 --// SERVICES
@@ -10,18 +10,15 @@ if getgenv().HXA_GUI then
 	getgenv().HXA_GUI:Destroy()
 end
 
---// SAFE LOAD
-local loaded = {}
-local function safeLoad(id, url)
-	if loaded[id] then return end
-	loaded[id] = true
-	loadstring(game:HttpGet(url, true))()
+--// EXEC SCRIPT
+local function runScript(url)
+	loadstring(game:HttpGet(url))()
 end
 
---// AUTO EXECUTE
-for id,url in pairs(getgenv().HXA_AUTOLOAD) do
+--// AUTO EXECUTE (ON SCRIPT START)
+for _,url in pairs(getgenv().HXA_AUTOLOAD) do
 	task.spawn(function()
-		safeLoad(id,url)
+		runScript(url)
 	end)
 end
 
@@ -33,8 +30,8 @@ getgenv().HXA_GUI = gui
 
 --// MAIN (2x smaller)
 local main = Instance.new("Frame", gui)
-main.Size = UDim2.new(0,170,0,240)
-main.Position = UDim2.new(0.5,-85,0.5,-120)
+main.Size = UDim2.new(0,170,0,255)
+main.Position = UDim2.new(0.5,-85,0.5,-128)
 main.BackgroundColor3 = Color3.fromRGB(15,10,35)
 main.BorderSizePixel = 0
 main.Active = true
@@ -100,46 +97,24 @@ local function createButton(text,id,url)
 			b.BackgroundColor3 = Color3.fromRGB(0,170,0)
 			return
 		end
-		safeLoad(id,url)
+		runScript(url)
 	end)
 end
 
---// ===== ALL BUTTONS (COMPLET) =====
-createButton("🚀 TP BLOCK","tpblock",
-"https://raw.githubusercontent.com/rookieiscute/rookiescripts/main/RookieTp")
-
-createButton("🌶️ Chilli Hub","chilli",
-"https://raw.githubusercontent.com/tienkhanh1/spicy/main/Chilli.lua")
-
-createButton("🌀 Nameless Hub","nameless",
-"https://raw.githubusercontent.com/ily123950/Vulkan/main/Tr")
-
-createButton("✨ Illusion Hub","illusion",
-"https://raw.githubusercontent.com/fdellacortw-svg/Website/main/config1")
-
-createButton("🧿 Miranda Hub","miranda",
-"https://pastefy.app/JJVhs3rK/raw")
-
-createButton("🟢 Kurd Hub","kurd",
-"https://raw.githubusercontent.com/Ninja10908/S4/main/Kurdhub")
-
-createButton("⚡ AP Spammer","apspammer",
-"https://api.luarmor.net/files/v3/loaders/ede7ef9c404dba463a6103aeb3cc321a.lua")
-
-createButton("🔓 Allow / Disallow","allow",
-"https://pastefy.app/wcNjuW3Z/raw")
-
-createButton("☀️ Sun Hub","sunhub",
-"https://api.luarmor.net/files/v4/loaders/623c61e59524bc04f458c6f6dd2c3f8b.lua")
-
-createButton("🎯 AIMBOT HXA","aimbot",
-"https://raw.githubusercontent.com/justahub291/hxa-private3/main/player-targeting-ui.lua")
-
-createButton("⚡ Semi Instant Steal","semi",
-"https://raw.githubusercontent.com/Solaratfr/SemiInstaSteal/main/Artfull")
-
-createButton("🧬 DESYNC","desync",
-"https://gist.githubusercontent.com/corruptedhub901/d9198a32ccb024d3a709fc79181d45af/raw")
+--// ===== ALL BUTTONS =====
+createButton("🚀 TP BLOCK","tpblock","https://raw.githubusercontent.com/rookieiscute/rookiescripts/main/RookieTp")
+createButton("⚡ FLASH TP","flashtp","https://api.luarmor.net/files/v4/loaders/0b5aa751f72560035e687cd879a5a1df.lua")
+createButton("🌶️ Chilli Hub","chilli","https://raw.githubusercontent.com/tienkhanh1/spicy/main/Chilli.lua")
+createButton("🌀 Nameless Hub","nameless","https://raw.githubusercontent.com/ily123950/Vulkan/main/Tr")
+createButton("✨ Illusion Hub","illusion","https://raw.githubusercontent.com/fdellacortw-svg/Website/main/config1")
+createButton("🧿 Miranda Hub","miranda","https://pastefy.app/JJVhs3rK/raw")
+createButton("🟢 Kurd Hub","kurd","https://raw.githubusercontent.com/Ninja10908/S4/main/Kurdhub")
+createButton("⚡ AP Spammer","apspammer","https://api.luarmor.net/files/v3/loaders/ede7ef9c404dba463a6103aeb3cc321a.lua")
+createButton("🔓 Allow / Disallow","allow","https://pastefy.app/wcNjuW3Z/raw")
+createButton("☀️ Sun Hub","sunhub","https://api.luarmor.net/files/v4/loaders/623c61e59524bc04f458c6f6dd2c3f8b.lua")
+createButton("🎯 AIMBOT HXA","aimbot","https://raw.githubusercontent.com/justahub291/hxa-private3/main/player-targeting-ui.lua")
+createButton("⚡ Semi Instant Steal","semi","https://raw.githubusercontent.com/Solaratfr/SemiInstaSteal/main/Artfull")
+createButton("🧬 DESYNC","desync","https://gist.githubusercontent.com/corruptedhub901/d9198a32ccb024d3a709fc79181d45af/raw")
 
 --// BOTTOM BUTTONS
 local removeBtn = Instance.new("TextButton", main)
@@ -168,10 +143,12 @@ removeBtn.MouseButton1Click:Connect(function()
 	selected = {}
 end)
 
+--// CONFIRM (FIXED)
 confirmBtn.MouseButton1Click:Connect(function()
 	if mode == "AUTO" then
 		for id,data in pairs(selected) do
 			getgenv().HXA_AUTOLOAD[id] = data.url
+			runScript(data.url) -- 🔥 EXEC IMMEDIATELY
 			data.button.BackgroundColor3 = Color3.fromRGB(95,60,180)
 		end
 	elseif mode == "REMOVE" then
@@ -207,4 +184,3 @@ reopen.MouseButton1Click:Connect(function()
 	main.Visible = true
 	reopen.Visible = false
 end)
-
